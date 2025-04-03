@@ -1,0 +1,10 @@
+<div class="container">
+    <h2 class="title">Interview Prep Hub</h2>
+
+    <div class="questions-grid">
+        <div *ngFor="let q of questions(); let i = index" class="question-card">
+            <h3> {{ i + 1 }}. {{q.question}}</h3>
+            <p>{{q.answer}}</p>
+        </div>
+    </div>
+</div>
