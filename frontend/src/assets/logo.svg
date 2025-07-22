@@ -1,0 +1,58 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Modern IPH Logo Design - Larger Version -->
+  <defs>
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9"/>
+      <stop offset="50%" style="stop-color:#3b82f6"/>
+      <stop offset="100%" style="stop-color:#6366f1"/>
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b"/>
+      <stop offset="100%" style="stop-color:#ef4444"/>
+    </linearGradient>
+    <linearGradient id="backgroundGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8fafc"/>
+      <stop offset="100%" style="stop-color:#e2e8f0"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/> 
+      </feMerge>
+    </filter>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="32" cy="32" r="30" fill="url(#backgroundGradient)" filter="url(#shadow)"/>
+  <circle cx="32" cy="32" r="28" fill="url(#primaryGradient)" opacity="0.05"/>
+  
+  <!-- Letter I -->
+  <rect x="12" y="16" width="6" height="32" rx="3" fill="url(#primaryGradient)" filter="url(#glow)"/>
+  <rect x="10" y="16" width="10" height="5" rx="2.5" fill="url(#primaryGradient)"/>
+  <rect x="10" y="43" width="10" height="5" rx="2.5" fill="url(#primaryGradient)"/>
+  
+  <!-- Letter P -->
+  <rect x="24" y="16" width="6" height="32" rx="3" fill="url(#primaryGradient)" filter="url(#glow)"/>
+  <path d="M24 16h12c4.4 0 8 3.6 8 8s-3.6 8-8 8h-12V16z" fill="url(#primaryGradient)"/>
+  <path d="M30 21h6c2.2 0 4 1.8 4 4s-1.8 4-4 4h-6v-8z" fill="white"/>
+  
+  <!-- Letter H -->
+  <rect x="46" y="16" width="6" height="32" rx="3" fill="url(#accentGradient)" filter="url(#glow)"/>
+  <rect x="54" y="16" width="6" height="32" rx="3" fill="url(#accentGradient)" filter="url(#glow)"/>
+  <rect x="46" y="29" width="14" height="6" rx="3" fill="url(#accentGradient)"/>
+  
+  <!-- Tech Elements -->
+  <circle cx="16" cy="12" r="2" fill="url(#accentGradient)" opacity="0.8"/>
+  <circle cx="48" cy="52" r="2" fill="url(#primaryGradient)" opacity="0.8"/>
+  <rect x="52" y="8" width="4" height="4" rx="2" fill="url(#accentGradient)" opacity="0.6"/>
+  <circle cx="8" cy="32" r="1.5" fill="url(#primaryGradient)" opacity="0.4"/>
+  <circle cx="56" cy="24" r="1.5" fill="url(#accentGradient)" opacity="0.4"/>
+  
+  <!-- Code Brackets for Tech Feel -->
+  <path d="M6 28 L10 32 L6 36" stroke="url(#primaryGradient)" stroke-width="2" fill="none" opacity="0.3"/>
+  <path d="M58 28 L54 32 L58 36" stroke="url(#accentGradient)" stroke-width="2" fill="none" opacity="0.3"/>
+</svg>
