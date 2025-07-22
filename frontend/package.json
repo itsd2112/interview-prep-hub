@@ -7,7 +7,12 @@
     "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "vercel-build": "npm run build"
+    "vercel-build": "npm install && npm run build",
+    "postinstall": "ngcc"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   },
   "private": true,
   "dependencies": {
