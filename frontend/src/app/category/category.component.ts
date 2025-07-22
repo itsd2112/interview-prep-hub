@@ -75,44 +75,35 @@ export class CategoryComponent implements OnInit {
   private loadQuestions(categoryId: string): void {
     this.isLoading.set(true);
     
-    // Mock data for demonstration - replace with actual API call
-    const mockQuestions: Question[] = [
-      {
-        id: 1,
-        question: "What is the difference between let, const, and var in JavaScript?",
-        answer: "let and const are block-scoped, while var is function-scoped. const cannot be reassigned after declaration, while let and var can be. let and const have temporal dead zone, var doesn't."
+    this.questionsService.getQuestions(categoryId).subscribe({
+      next: (questions) => {
+        const questionsWithState = questions.map(question => ({
+          ...question,
+          isExpanded: false,
+          isBookmarked: false
+        }));
+        this.questions.set(questionsWithState);
+        this.filteredQuestions.set(questionsWithState);
+        this.extractAvailableTags(questionsWithState);
       },
-      {
-        id: 2,
-        question: "Explain the concept of closures in JavaScript",
-        answer: "A closure is a function that has access to variables in its outer (enclosing) scope even after the outer function has returned. Closures are created every time a function is created."
+      error: (error) => {
+        console.error('Error loading questions:', error);
+        this.isLoading.set(false);
       },
-      {
-        id: 3,
-        question: "What is the Virtual DOM in React?",
-        answer: "The Virtual DOM is a JavaScript representation of the actual DOM. React uses it to optimize rendering by comparing the virtual DOM with the previous version and only updating the parts that have changed."
+      complete: () => {
+        this.isLoading.set(false);
       }
-    ];
-
-    // Simulate API delay
-    setTimeout(() => {
-      const questionsWithState: QuestionWithState[] = mockQuestions.map(q => ({
-        ...q,
-        isExpanded: false,
-        isBookmarked: false
-      }));
-      
-      this.questions.set(questionsWithState);
-      this.filteredQuestions.set(questionsWithState);
-      this.extractAvailableTags(questionsWithState);
-      this.isLoading.set(false);
-    }, 1000);
+    });
   }
 
   private extractAvailableTags(questions: QuestionWithState[]): void {
-    // Mock tags - in real app, extract from questions
-    const tags = ['JavaScript', 'React', 'Angular', 'TypeScript', 'HTML', 'CSS', 'ES6', 'Async/Await'];
-    this.availableTags.set(tags);
+    const allTags = new Set<string>();
+    questions.forEach(question => {
+      if (question.tags) {
+        question.tags.forEach(tag => allTags.add(tag));
+      }
+    });
+    this.availableTags.set(Array.from(allTags));
   }
 
   toggleQuestion(questionId: number): void {

@@ -19,8 +19,11 @@ export class QuestionsService {
   private apiUrl = `${environment.apiUrl}/questions`;
   private http = inject(HttpClient);
 
-  getQuestions(category?: string): Observable<Question[]> {
-    const url = category ? `${this.apiUrl}?category=${category}` : this.apiUrl;
-    return this.http.get<Question[]>(url);
+  getCategories(): Observable<string[]> {
+    return this.http.get<string[]>(`${environment.apiUrl}/categories`);
+  }
+
+  getQuestions(category: string): Observable<Question[]> {
+    return this.http.get<Question[]>(`${environment.apiUrl}/questions/${category}`);
   }
 }

@@ -90,13 +90,123 @@ export class HomeComponent implements OnInit {
     }
   ]);
 
+  isLoading = signal(true);
+  error = signal<string | null>(null);
+
   ngOnInit(): void {
-    this.calculateTotalQuestions();
+    this.loadCategories();
+  }
+
+  private loadCategories(): void {
+    this.isLoading.set(true);
+    this.questionsService.getCategories().subscribe({
+      next: (categoryIds) => {
+        // Map category IDs to our CategoryCard interface
+        const categories = categoryIds.map(id => {
+          const name = this.getCategoryName(id);
+          return {
+            id,
+            name,
+            description: this.getCategoryDescription(id),
+            icon: this.getCategoryIcon(id),
+            color: this.getCategoryColor(id),
+            questionCount: 0, // We don't have this info from the API
+            tags: this.getCategoryTags(id),
+            difficulty: this.getCategoryDifficulty(id)
+          };
+        });
+        
+        this.categories.set(categories);
+        this.calculateTotalQuestions();
+      },
+      error: (err) => {
+        console.error('Error loading categories:', err);
+        this.error.set('Failed to load categories. Please try again later.');
+        this.isLoading.set(false);
+      },
+      complete: () => {
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  private getCategoryName(id: string): string {
+    const names: {[key: string]: string} = {
+      'frontend': 'Frontend Development',
+      'backend': 'Backend Development',
+      'data-structures': 'Data Structures',
+      'algorithms': 'Algorithms',
+      'system-design': 'System Design',
+      'databases': 'Databases'
+    };
+    return names[id] || id.split('-').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
+  }
+
+  private getCategoryDescription(id: string): string {
+    const descriptions: {[key: string]: string} = {
+      'frontend': 'React, Angular, Vue.js, HTML, CSS, and JavaScript fundamentals',
+      'backend': 'Node.js, Express, Django, Spring Boot, and other backend technologies',
+      'data-structures': 'Arrays, Linked Lists, Trees, Graphs, and other fundamental data structures',
+      'algorithms': 'Sorting, Searching, Dynamic Programming, and other algorithm patterns',
+      'system-design': 'Designing scalable and distributed systems',
+      'databases': 'SQL, NoSQL, database design, and optimization'
+    };
+    return descriptions[id] || `Questions about ${this.getCategoryName(id).toLowerCase()}`;
+  }
+
+  private getCategoryTags(id: string): string[] {
+    const tags: {[key: string]: string[]} = {
+      'frontend': ['React', 'Angular', 'Vue.js', 'HTML', 'CSS', 'JavaScript', 'TypeScript'],
+      'backend': ['Node.js', 'Express', 'Django', 'Spring Boot', 'REST', 'GraphQL'],
+      'data-structures': ['Arrays', 'Linked Lists', 'Trees', 'Graphs', 'Hash Tables'],
+      'algorithms': ['Sorting', 'Searching', 'DP', 'Recursion', 'Big O'],
+      'system-design': ['Scalability', 'Load Balancing', 'Caching', 'Microservices'],
+      'databases': ['SQL', 'NoSQL', 'MongoDB', 'PostgreSQL', 'Indexing']
+    };
+    return tags[id] || [];
   }
 
   private calculateTotalQuestions(): void {
     const total = this.categories().reduce((sum, category) => sum + category.questionCount, 0);
     this.totalQuestions.set(total);
+  }
+
+  private getCategoryIcon(categoryId: string): string {
+    const icons: {[key: string]: string} = {
+      'frontend': '🎨',
+      'backend': '⚙️',
+      'data-structures': '📊',
+      'algorithms': '🧮',
+      'system-design': '🏗️',
+      'databases': '💾'
+    };
+    return icons[categoryId] || '📚';
+  }
+
+  private getCategoryColor(categoryId: string): string {
+    const colors: {[key: string]: string} = {
+      'frontend': '#0ea5e9',
+      'backend': '#10b981',
+      'data-structures': '#8b5cf6',
+      'algorithms': '#ec4899',
+      'system-design': '#f59e0b',
+      'databases': '#6366f1'
+    };
+    return colors[categoryId] || '#6b7280';
+  }
+
+  private getCategoryDifficulty(categoryId: string): 'Easy' | 'Medium' | 'Hard' {
+    const difficulties: {[key: string]: 'Easy' | 'Medium' | 'Hard'} = {
+      'frontend': 'Medium',
+      'backend': 'Medium',
+      'data-structures': 'Hard',
+      'algorithms': 'Hard',
+      'system-design': 'Hard',
+      'databases': 'Medium'
+    };
+    return difficulties[categoryId] || 'Medium';
   }
 
   getCategoryDataAttribute(categoryName: string): string {
