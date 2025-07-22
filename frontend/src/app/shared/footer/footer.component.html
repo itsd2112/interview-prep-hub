@@ -96,8 +96,9 @@
             rel="noopener noreferrer"
             class="social-link"
             [title]="social.name"
+            [style.background]="social.color"
           >
-            <span [innerHTML]="social.icon"></span>
+            <i [class]="'fab fa-' + social.icon"></i>
           </a>
         </div>
       </div>
