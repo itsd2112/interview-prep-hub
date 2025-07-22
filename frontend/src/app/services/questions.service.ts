@@ -1,21 +1,26 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Question {
   id: number;
   question: string;
   answer: string;
+  category?: string;
+  tags?: string[];
+  difficulty?: 'easy' | 'medium' | 'hard';
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class QuestionsService {
-  private apiUrl = 'http://localhost:8080/api/questions';
+  private apiUrl = `${environment.apiUrl}/questions`;
   private http = inject(HttpClient);
 
-  getQuestions(): Observable<Question[]> {
-    return this.http.get<Question[]>(this.apiUrl);
+  getQuestions(category?: string): Observable<Question[]> {
+    const url = category ? `${this.apiUrl}?category=${category}` : this.apiUrl;
+    return this.http.get<Question[]>(url);
   }
 }
