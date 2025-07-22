@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "node server.js",
     "build": "ng build --configuration production --output-hashing=all",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "vercel-build": "npm install --legacy-peer-deps && npm run build",
+    "vercel-build": "npm install && npm run build",
     "postinstall": "ngcc"
   },
   "engines": {

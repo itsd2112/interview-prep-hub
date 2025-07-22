@@ -1,11 +1,12 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "dist/app.js",
+  "main": "./dist/app.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/app.js",
-    "dev": "nodemon src/app.ts"
+    "build": "rm -rf dist/ && tsc",
+    "start": "NODE_ENV=production node dist/app.js",
+    "dev": "nodemon src/app.ts",
+    "clean": "rm -rf dist/"
   },
   "author": "deepak",
   "license": "ISC",
