@@ -45,6 +45,7 @@
           class="category-card card slide-up"
           (click)="navigateToCategory(category)"
           [style.--card-color]="category.color"
+          [attr.data-category]="getCategoryDataAttribute(category.name)"
         >
           <div class="card-header">
             <div class="category-icon-wrapper">
@@ -148,4 +149,7 @@
       </div>
     </div>
   </section>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
 </div>

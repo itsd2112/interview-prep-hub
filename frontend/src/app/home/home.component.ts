@@ -2,6 +2,7 @@ import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { QuestionsService } from '../services/questions.service';
+import { FooterComponent } from '../shared/footer/footer.component';
 
 interface CategoryCard {
   id: string;
@@ -17,7 +18,7 @@ interface CategoryCard {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FooterComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -96,6 +97,10 @@ export class HomeComponent implements OnInit {
   private calculateTotalQuestions(): void {
     const total = this.categories().reduce((sum, category) => sum + category.questionCount, 0);
     this.totalQuestions.set(total);
+  }
+
+  getCategoryDataAttribute(categoryName: string): string {
+    return categoryName.toLowerCase().replace(/\s+/g, '');
   }
 
   navigateToCategory(category: CategoryCard): void {
