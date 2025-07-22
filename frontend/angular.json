@@ -4,22 +4,25 @@
   "newProjectRoot": "projects",
   "projects": {
     "frontend": {
+      "root": "",
+      "sourceRoot": "src",
       "projectType": "application",
+      "prefix": "app",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
-      "root": "",
-      "sourceRoot": "src",
-      "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist/frontend",
-            "index": "src/index.html",
+            "outputHashing": "all",
+            "deleteOutputPath": true,
+            "baseHref": "/",
             "browser": "src/main.ts",
+            "index": "src/index.html",
             "polyfills": [
               "zone.js"
             ],
