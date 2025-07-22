@@ -1,0 +1,155 @@
+<div class="home-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="hero-title fade-in">
+          Master Your Next
+          <span class="gradient-text">Technical Interview</span>
+        </h1>
+        <p class="hero-description fade-in">
+          Prepare with confidence using our curated collection of interview questions, 
+          organized by technology and difficulty level.
+        </p>
+        <div class="hero-stats fade-in">
+          <div class="stat-item">
+            <span class="stat-number">{{ totalQuestions() }}</span>
+            <span class="stat-label">Questions</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ categories().length }}</span>
+            <span class="stat-label">Categories</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">100%</span>
+            <span class="stat-label">Free</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="categories-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Browse by Category</h2>
+        <p class="section-description">
+          Choose your focus area and start practicing with targeted questions
+        </p>
+      </div>
+
+      <div class="categories-grid grid grid-cols-3">
+        <div 
+          *ngFor="let category of categories(); trackBy: trackByCategory"
+          class="category-card card slide-up"
+          (click)="navigateToCategory(category)"
+          [style.--card-color]="category.color"
+          [attr.data-category]="getCategoryDataAttribute(category.name)"
+        >
+          <div class="card-header">
+            <div class="category-icon-wrapper">
+              <span class="category-icon">{{ category.icon }}</span>
+            </div>
+            <div class="difficulty-badge" [class]="'difficulty-' + category.difficulty.toLowerCase()">
+              {{ category.difficulty }}
+            </div>
+          </div>
+
+          <div class="card-content">
+            <h3 class="category-name">{{ category.name }}</h3>
+            <p class="category-description">{{ category.description }}</p>
+            
+            <div class="category-meta">
+              <span class="question-count">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 11H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-2" stroke="currentColor" stroke-width="2"/>
+                  <rect x="9" y="3" width="6" height="8" rx="2" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                {{ category.questionCount }} questions
+              </span>
+            </div>
+
+            <div class="category-tags">
+              <span 
+                *ngFor="let tag of category.tags.slice(0, 3)" 
+                class="tag"
+              >
+                {{ tag }}
+              </span>
+              <span *ngIf="category.tags.length > 3" class="tag-more">
+                +{{ category.tags.length - 3 }}
+              </span>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button class="start-btn">
+              <span>Start Practice</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Hover Effect Overlay -->
+          <div class="card-overlay"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Why Choose Interview Prep Hub?</h2>
+      </div>
+
+      <div class="features-grid grid grid-cols-3">
+        <div class="feature-card card fade-in">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" stroke-width="2"/>
+              <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Organized Content</h3>
+          <p class="feature-description">
+            Questions are carefully categorized by technology and difficulty level for focused learning.
+          </p>
+        </div>
+
+        <div class="feature-card card fade-in">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Interactive Learning</h3>
+          <p class="feature-description">
+            Engage with collapsible Q&A cards and track your progress as you learn.
+          </p>
+        </div>
+
+        <div class="feature-card card fade-in">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+              <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
+              <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
+              <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Always Updated</h3>
+          <p class="feature-description">
+            Our question bank is regularly updated with the latest industry trends and practices.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
+</div>

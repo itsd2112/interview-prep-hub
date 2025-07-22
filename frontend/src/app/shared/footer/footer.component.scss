@@ -1,0 +1,236 @@
+:host {
+  display: block;
+  margin-top: auto;
+}
+
+.app-footer {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-top: 1px solid #e2e8f0;
+  margin-top: var(--space-16);
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+.footer-main {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: var(--space-12);
+  padding: var(--space-16) 0;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    padding: var(--space-12) 0;
+  }
+}
+
+.footer-brand {
+  .footer-logo {
+    margin-bottom: var(--space-4);
+    transition: transform 0.2s ease;
+    
+    &:hover {
+      transform: scale(1.02);
+    }
+    
+    .logo-svg {
+      width: 200px;
+      height: 40px;
+      
+      .logo-text {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        
+        &.logo-interview, &.logo-hub {
+          fill: #1e293b;  /* Dark blue-gray to match header */
+        }
+        
+        &.logo-prep {
+          fill: url(#accentGrad);  /* Use accent gradient for PREP */
+          font-weight: 700;
+        }
+      }
+      
+      .logo-underline {
+        stroke-width: 2px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        opacity: 0.9;
+        
+        &.underline-interview {
+          stroke-dasharray: 75;
+        }
+        
+        &.underline-prep {
+          stroke-dasharray: 40;
+        }
+        
+        &.underline-hub {
+          stroke-dasharray: 30;
+        }
+      }
+    }
+  }
+
+  .footer-description {
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: var(--space-6);
+    font-size: 0.95rem;
+  }
+}
+
+.social-links {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: white;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  
+  i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0.9;
+  }
+}
+
+.footer-section {
+  .footer-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: var(--space-4);
+    font-family: var(--font-family);
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: var(--space-2);
+    }
+  }
+
+  .footer-link {
+    color: #64748b;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color var(--transition-fast);
+    display: inline-block;
+
+    &:hover {
+      color: #3b82f6;
+      transform: translateX(4px);
+    }
+  }
+}
+
+.footer-bottom {
+  border-top: 1px solid #e2e8f0;
+  padding: var(--space-6) 0;
+  background: rgba(248, 250, 252, 0.8);
+}
+
+.footer-bottom-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.copyright {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.footer-bottom-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 0.875rem;
+
+  .footer-bottom-link {
+    color: #64748b;
+    text-decoration: none;
+    transition: color var(--transition-fast);
+
+    &:hover {
+      color: #3b82f6;
+    }
+  }
+
+  .separator {
+    color: #cbd5e1;
+  }
+}
+
+// Add gradients for logo
+.logo-svg {
+  defs {
+    linearGradient#prepGradient {
+      stop:nth-child(1) {
+        stop-color: #f97316;
+      }
+      stop:nth-child(2) {
+        stop-color: #ea580c;
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 1024px) {
+  .footer-main {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+  }
+}
+
+@media (max-width: 640px) {
+  .footer-container {
+    padding: 0 var(--space-4);
+  }
+  
+  .footer-brand .footer-logo .logo-svg {
+    width: 160px;
+    height: 36px;
+  }
+  
+  .social-links {
+    justify-content: center;
+  }
+}

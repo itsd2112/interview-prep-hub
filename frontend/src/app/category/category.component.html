@@ -1,0 +1,276 @@
+<div class="category-container">
+  <!-- Header Section -->
+  <div class="category-header">
+    <div class="container">
+      <div class="header-content">
+        <button class="back-btn" (click)="goBack()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Back to Categories
+        </button>
+        
+        <div class="category-info">
+          <h1 class="category-title">{{ categoryName() }}</h1>
+          <p class="category-stats">
+            {{ filteredQuestions().length }} of {{ questions().length }} questions
+            <span *ngIf="getActiveFiltersCount() > 0" class="filter-indicator">
+              • {{ getActiveFiltersCount() }} filter(s) active
+            </span>
+          </p>
+        </div>
+
+        <!-- Mobile Filter Toggle -->
+        <button class="mobile-filter-toggle" (click)="toggleMobileFilters()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Filters
+          <span *ngIf="getActiveFiltersCount() > 0" class="filter-badge">
+            {{ getActiveFiltersCount() }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container">
+      <div class="content-layout">
+        <!-- Desktop Filter Sidebar -->
+        <aside class="filter-sidebar">
+          <div class="filter-panel">
+            <div class="filter-header">
+              <h3 class="filter-title">Filters</h3>
+              <button 
+                *ngIf="getActiveFiltersCount() > 0" 
+                class="clear-filters-btn"
+                (click)="clearAllFilters()"
+              >
+                Clear All
+              </button>
+            </div>
+
+            <!-- Search Filter -->
+            <div class="filter-section">
+              <label class="filter-label">Search Questions</label>
+              <div class="search-input-wrapper">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                  <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <input 
+                  type="text" 
+                  class="search-input"
+                  placeholder="Search in questions..."
+                  [(ngModel)]="searchQuery"
+                  (input)="onSearchChange()"
+                />
+              </div>
+            </div>
+
+            <!-- Difficulty Filter -->
+            <div class="filter-section">
+              <label class="filter-label">Difficulty Level</label>
+              <div class="filter-options">
+                <button 
+                  *ngFor="let difficulty of availableDifficulties()"
+                  class="filter-option"
+                  [class.active]="selectedDifficulties().includes(difficulty)"
+                  (click)="onDifficultyToggle(difficulty)"
+                >
+                  <span class="difficulty-indicator" [class]="'difficulty-' + difficulty.toLowerCase()"></span>
+                  {{ difficulty }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Tags Filter -->
+            <div class="filter-section">
+              <label class="filter-label">Topics & Tags</label>
+              <div class="filter-tags">
+                <button 
+                  *ngFor="let tag of availableTags()"
+                  class="tag-filter"
+                  [class.active]="selectedTags().includes(tag)"
+                  (click)="onTagToggle(tag)"
+                >
+                  {{ tag }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Questions Content -->
+        <main class="questions-content">
+          <!-- Loading State -->
+          <div *ngIf="isLoading()" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading questions...</p>
+          </div>
+
+          <!-- Questions List -->
+          <div *ngIf="!isLoading()" class="questions-list">
+            <div 
+              *ngFor="let question of filteredQuestions(); trackBy: trackByQuestion"
+              class="question-card card"
+            >
+              <div class="question-header" (click)="toggleQuestion(question.id)">
+                <div class="question-info">
+                  <h3 class="question-title">{{ question.question }}</h3>
+                  <div class="question-meta">
+                    <span class="question-id">#{{ question.id }}</span>
+                    <span class="difficulty-badge difficulty-medium">Medium</span>
+                  </div>
+                </div>
+                
+                <div class="question-actions">
+                  <button 
+                    class="bookmark-btn"
+                    [class.active]="question.isBookmarked"
+                    (click)="toggleBookmark(question.id); $event.stopPropagation()"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" 
+                            [attr.stroke]="question.isBookmarked ? 'none' : 'currentColor'" 
+                            [attr.fill]="question.isBookmarked ? 'currentColor' : 'none'"
+                            stroke-width="2"/>
+                    </svg>
+                  </button>
+                  
+                  <button class="expand-btn" [class.expanded]="question.isExpanded">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Answer Content -->
+              <div class="answer-content" [class.expanded]="question.isExpanded">
+                <div class="answer-wrapper">
+                  <div class="answer-text">
+                    <h4 class="answer-label">Answer:</h4>
+                    <p class="answer-description">{{ question.answer }}</p>
+                  </div>
+                  
+                  <div class="answer-actions">
+                    <button class="action-btn">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2"/>
+                      </svg>
+                      Copy
+                    </button>
+                    
+                    <button class="action-btn">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2"/>
+                        <polyline points="15,3 21,3 21,9" stroke="currentColor" stroke-width="2"/>
+                        <line x1="10" y1="14" x2="21" y2="3" stroke="currentColor" stroke-width="2"/>
+                      </svg>
+                      Share
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="filteredQuestions().length === 0" class="empty-state">
+              <div class="empty-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                  <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                  <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <h3 class="empty-title">No questions found</h3>
+              <p class="empty-description">
+                Try adjusting your filters or search terms to find more questions.
+              </p>
+              <button class="clear-filters-btn" (click)="clearAllFilters()">
+                Clear All Filters
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Filter Overlay -->
+  <div class="mobile-filter-overlay" *ngIf="isMobileFiltersOpen()" (click)="toggleMobileFilters()">
+    <div class="mobile-filter-panel" (click)="$event.stopPropagation()">
+      <div class="mobile-filter-header">
+        <h3 class="filter-title">Filters</h3>
+        <button class="close-btn" (click)="toggleMobileFilters()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="mobile-filter-content">
+        <!-- Mobile Search -->
+        <div class="filter-section">
+          <label class="filter-label">Search Questions</label>
+          <div class="search-input-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+              <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <input 
+              type="text" 
+              class="search-input"
+              placeholder="Search in questions..."
+              [(ngModel)]="searchQuery"
+              (input)="onSearchChange()"
+            />
+          </div>
+        </div>
+
+        <!-- Mobile Difficulty Filter -->
+        <div class="filter-section">
+          <label class="filter-label">Difficulty Level</label>
+          <div class="filter-options">
+            <button 
+              *ngFor="let difficulty of availableDifficulties()"
+              class="filter-option"
+              [class.active]="selectedDifficulties().includes(difficulty)"
+              (click)="onDifficultyToggle(difficulty)"
+            >
+              <span class="difficulty-indicator" [class]="'difficulty-' + difficulty.toLowerCase()"></span>
+              {{ difficulty }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile Tags Filter -->
+        <div class="filter-section">
+          <label class="filter-label">Topics & Tags</label>
+          <div class="filter-tags">
+            <button 
+              *ngFor="let tag of availableTags()"
+              class="tag-filter"
+              [class.active]="selectedTags().includes(tag)"
+              (click)="onTagToggle(tag)"
+            >
+              {{ tag }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mobile-filter-footer">
+        <button class="clear-filters-btn" (click)="clearAllFilters()">
+          Clear All
+        </button>
+        <button class="apply-filters-btn" (click)="toggleMobileFilters()">
+          Apply Filters
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
