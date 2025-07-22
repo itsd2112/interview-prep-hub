@@ -1,12 +1,13 @@
 {
-  "name": "frontend",
-  "version": "0.0.0",
+  "name": "interview-prep-hub-frontend",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "vercel-build": "npm run build"
   },
   "private": true,
   "dependencies": {
