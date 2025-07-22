@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "cd frontend && npm run build",
-  "outputDirectory": "frontend/dist/frontend",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/frontend",
   "routes": [
     {
       "src": "/assets/(.*)",
