@@ -41,9 +41,9 @@
 
       <div class="categories-grid grid grid-cols-3">
         <div 
-          *ngFor="let category of categories(); trackBy: trackByCategory"
+          *ngFor="let category of categories(); trackBy: trackByCategoryId"
           class="category-card card slide-up"
-          (click)="navigateToCategory(category)"
+          (click)="navigateToCategory(category.id)"
           [style.--card-color]="category.color"
           [attr.data-category]="getCategoryDataAttribute(category.name)"
         >
