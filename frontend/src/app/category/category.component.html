@@ -3,7 +3,7 @@
   <div class="category-header">
     <div class="container">
       <div class="header-content">
-        <button class="back-btn" (click)="goBack()">
+        <button class="back-btn" (click)="goBack()" aria-label="Back to categories">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2"/>
           </svg>
@@ -13,7 +13,7 @@
         <div class="category-info">
           <h1 class="category-title">{{ categoryName() }}</h1>
           <p class="category-stats">
-            {{ filteredQuestions().length }} of {{ questions().length }} questions
+            Showing {{ filteredQuestions().length }} of {{ questions().length }} questions
             <span *ngIf="getActiveFiltersCount() > 0" class="filter-indicator">
               • {{ getActiveFiltersCount() }} filter(s) active
             </span>
@@ -21,7 +21,7 @@
         </div>
 
         <!-- Mobile Filter Toggle -->
-        <button class="mobile-filter-toggle" (click)="toggleMobileFilters()">
+        <button class="mobile-filter-toggle" (click)="toggleMobileFilters()" aria-label="Toggle filters">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" stroke="currentColor" stroke-width="2"/>
           </svg>
@@ -47,6 +47,7 @@
                 *ngIf="getActiveFiltersCount() > 0" 
                 class="clear-filters-btn"
                 (click)="clearAllFilters()"
+                aria-label="Clear all filters"
               >
                 Clear All
               </button>
@@ -116,13 +117,24 @@
             <div 
               *ngFor="let question of filteredQuestions(); trackBy: trackByQuestion"
               class="question-card card"
+              [class.expanded]="question.isExpanded"
             >
               <div class="question-header" (click)="toggleQuestion(question.id)">
                 <div class="question-info">
                   <h3 class="question-title">{{ question.question }}</h3>
                   <div class="question-meta">
-                    <span class="question-id">#{{ question.id }}</span>
-                    <span class="difficulty-badge difficulty-medium">Medium</span>
+                    <span class="question-id">#{{ question.id.toString().slice(0, 8) }}</span>
+                    <span 
+                      class="difficulty-badge"
+                      [class.difficulty-easy]="question.difficulty?.toLowerCase() === 'easy'"
+                      [class.difficulty-medium]="question.difficulty?.toLowerCase() === 'medium'"
+                      [class.difficulty-hard]="question.difficulty?.toLowerCase() === 'hard'"
+                    >
+                      {{ question.difficulty || 'Medium' }}
+                    </span>
+                    <div class="question-tags" *ngIf="question.tags?.length">
+                      <span class="tag" *ngFor="let tag of question.tags">{{ tag }}</span>
+                    </div>
                   </div>
                 </div>
                 
@@ -131,18 +143,23 @@
                     class="bookmark-btn"
                     [class.active]="question.isBookmarked"
                     (click)="toggleBookmark(question.id); $event.stopPropagation()"
+                    [attr.aria-label]="question.isBookmarked ? 'Remove bookmark' : 'Bookmark question'"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" 
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" 
                             [attr.stroke]="question.isBookmarked ? 'none' : 'currentColor'" 
                             [attr.fill]="question.isBookmarked ? 'currentColor' : 'none'"
-                            stroke-width="2"/>
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </button>
                   
-                  <button class="expand-btn" [class.expanded]="question.isExpanded">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2"/>
+                  <button 
+                    class="expand-btn" 
+                    [attr.aria-expanded]="question.isExpanded"
+                    [attr.aria-label]="question.isExpanded ? 'Collapse answer' : 'Expand answer'"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </button>
                 </div>
@@ -152,26 +169,35 @@
               <div class="answer-content" [class.expanded]="question.isExpanded">
                 <div class="answer-wrapper">
                   <div class="answer-text">
-                    <h4 class="answer-label">Answer:</h4>
-                    <p class="answer-description">{{ question.answer }}</p>
+                    <h4 class="answer-label">Answer</h4>
+                    <div class="answer-description" [innerHTML]="formatAnswer(question.answer)"></div>
                   </div>
                   
                   <div class="answer-actions">
-                    <button class="action-btn">
+                    <button 
+                      class="action-btn copy-btn"
+                      (click)="copyToClipboard(question.answer); $event.stopPropagation()"
+                      aria-label="Copy answer to clipboard"
+                    >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2"/>
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="1.5"/>
                       </svg>
-                      Copy
+                      <span class="btn-text">Copy</span>
+                      <span class="copied-indicator">Copied!</span>
                     </button>
                     
-                    <button class="action-btn">
+                    <button 
+                      class="action-btn share-btn"
+                      (click)="shareQuestion(question); $event.stopPropagation()"
+                      aria-label="Share question"
+                    >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2"/>
-                        <polyline points="15,3 21,3 21,9" stroke="currentColor" stroke-width="2"/>
-                        <line x1="10" y1="14" x2="21" y2="3" stroke="currentColor" stroke-width="2"/>
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="15,3 21,3 21,9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="10" y1="14" x2="21" y2="3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
-                      Share
+                      <span class="btn-text">Share</span>
                     </button>
                   </div>
                 </div>

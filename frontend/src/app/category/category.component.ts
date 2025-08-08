@@ -61,22 +61,35 @@ export class CategoryComponent implements OnInit {
   }
 
   private setCategoryName(categoryId: string): void {
-    const categoryNames: { [key: string]: string } = {
-      'frontend': 'Frontend Development',
-      'backend': 'Backend Development',
-      'data-structures': 'Data Structures',
-      'algorithms': 'Algorithms',
-      'system-design': 'System Design',
-      'databases': 'Databases'
+    // Map URL-friendly IDs to display names and backend category names
+    const categoryMap: { 
+      [key: string]: { displayName: string, backendName: string } 
+    } = {
+      'frontend': { displayName: 'Frontend Development', backendName: 'Frontend' },
+      'backend': { displayName: 'Backend Development', backendName: 'Backend' },
+      'data-structures': { displayName: 'Data Structures', backendName: 'Data Structures' },
+      'algorithms': { displayName: 'Algorithms', backendName: 'Algorithms' },
+      'system-design': { displayName: 'System Design', backendName: 'System Design' },
+      'databases': { displayName: 'Databases', backendName: 'Databases' }
     };
-    this.categoryName.set(categoryNames[categoryId] || 'Unknown Category');
+
+    const category = categoryMap[categoryId] || { displayName: 'Unknown Category', backendName: categoryId };
+    this.categoryName.set(category.displayName);
+    // Update the category ID to match the backend's expected format
+    this.categoryId.set(category.backendName);
   }
 
   private loadQuestions(categoryId: string): void {
     this.isLoading.set(true);
     
-    this.questionsService.getQuestions(categoryId).subscribe({
+    // Use the category ID that matches the backend's expected format
+    const backendCategoryName = this.categoryId();
+    
+    console.log(`Fetching questions for category: ${backendCategoryName}`);
+    
+    this.questionsService.getQuestions(backendCategoryName).subscribe({
       next: (questions) => {
+        console.log(`Received ${questions.length} questions`);
         const questionsWithState = questions.map(question => ({
           ...question,
           isExpanded: false,
@@ -151,7 +164,7 @@ export class CategoryComponent implements OnInit {
   private applyFilters(): void {
     const query = this.searchQuery().toLowerCase();
     const selectedTags = this.selectedTags();
-    const selectedDifficulties = this.selectedDifficulties();
+    const selectedDifficulties = this.selectedDifficulties().map(d => d.toLowerCase());
 
     this.filteredQuestions.set(
       this.questions().filter(question => {
@@ -160,13 +173,15 @@ export class CategoryComponent implements OnInit {
           question.question.toLowerCase().includes(query) ||
           question.answer.toLowerCase().includes(query);
 
-        // Tag filter (mock implementation)
+        // Tag filter - check if question has any of the selected tags
         const matchesTags = selectedTags.length === 0 || 
-          selectedTags.some(tag => question.question.toLowerCase().includes(tag.toLowerCase()));
+          (question.tags && question.tags.some((tag: string) => 
+            selectedTags.includes(tag.toLowerCase())
+          ));
 
-        // Difficulty filter (mock implementation)
+        // Difficulty filter - check if question matches any selected difficulty
         const matchesDifficulty = selectedDifficulties.length === 0 || 
-          selectedDifficulties.includes('Medium'); // Mock all as Medium
+          (question.difficulty && selectedDifficulties.includes(question.difficulty.toLowerCase()));
 
         return matchesSearch && matchesTags && matchesDifficulty;
       })
@@ -195,5 +210,70 @@ export class CategoryComponent implements OnInit {
 
   trackByQuestion(index: number, question: QuestionWithState): number {
     return question.id;
+  }
+
+  /**
+   * Format answer text with proper line breaks and formatting
+   */
+  formatAnswer(answer: string): string {
+    if (!answer) return '';
+    
+    // Replace numbered lists with proper HTML
+    let formatted = answer
+      .replace(/\n\s*\d+\.\s+/g, '</li><li>') // Numbered lists
+      .replace(/\n\s*[-*]\s+/g, '</li><li>') // Bullet points
+      .replace(/\n\s*\*\*([^*]+)\*\*/g, '<strong>$1</strong>') // Bold text
+      .replace(/\n\s*\*([^*]+)\*/g, '<em>$1</em>'); // Italic text
+    
+    // Add proper list tags if we found list items
+    if (formatted.includes('<li>')) {
+      formatted = `<ul><li>${formatted.replace(/<\/li><li>/, '')}</ul>`;
+    }
+    
+    // Convert line breaks to <br> tags
+    return formatted.replace(/\n/g, '<br>');
+  }
+
+  /**
+   * Copy text to clipboard
+   */
+  async copyToClipboard(text: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(text);
+      
+      // Show copied indicator
+      const button = event?.target as HTMLElement;
+      if (button) {
+        button.classList.add('copied');
+        setTimeout(() => button.classList.remove('copied'), 2000);
+      }
+    } catch (err) {
+      console.error('Failed to copy text:', err);
+    }
+  }
+
+  /**
+   * Share question using Web Share API
+   */
+  async shareQuestion(question: QuestionWithState): Promise<void> {
+    const shareData = {
+      title: question.question,
+      text: question.answer.length > 100 
+        ? `${question.answer.substring(0, 100)}...` 
+        : question.answer,
+      url: window.location.href
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback for browsers that don't support Web Share API
+        await this.copyToClipboard(`${question.question}\n\n${question.answer}`);
+        alert('Question copied to clipboard!');
+      }
+    } catch (err) {
+      console.error('Error sharing question:', err);
+    }
   }
 }

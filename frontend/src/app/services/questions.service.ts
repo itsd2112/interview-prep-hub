@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, shareReplay, throwError } from 'rxjs';
+import { Observable, catchError, map, shareReplay, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface Question {
@@ -60,6 +60,15 @@ export class QuestionsService {
     const request$ = this.http
       .get<Question[]>(`${this.apiUrl}/questions/${encodeURIComponent(category)}`)
       .pipe(
+        map((questions: any[]) => questions.map((question: any) => ({
+          ...question,
+          id: question['_id'], // Map _id to id for frontend compatibility
+          // Ensure all required fields have default values if missing
+          question: question.question || 'No question text',
+          answer: question.answer || 'No answer provided',
+          tags: question.tags || [],
+          difficulty: question.difficulty || 'medium'
+        }))),
         catchError(this.handleError<Question[]>(`getQuestions for category=${category}`, [])),
         shareReplay(CACHE_SIZE)
       );
